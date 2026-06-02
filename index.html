@@ -27,13 +27,10 @@
   --r-sm: 12px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;color:var(--c-text);}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;color:var(--c-text);background:var(--c-bg);}
 
 /* ── 지도 배경 전체 ── */
 #app{width:100vw;height:100vh;position:relative;overflow:hidden;}
-
-/* ── 지도 SVG 배경 ── */
-#map-bg{position:absolute;inset:0;width:100%;height:100%;}
 
 /* ── 헤더 ── */
 #header{
@@ -50,7 +47,6 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans
   font-family:'Gaegu',cursive;font-size:26px;font-weight:700;
   color:var(--c-green);display:flex;align-items:center;gap:6px;
 }
-.logo-cat{width:36px;height:36px;}
 #header nav{margin-left:auto;display:flex;gap:8px;}
 .nav-btn{
   padding:7px 16px;border-radius:99px;border:2px solid #c8e6c9;
@@ -62,45 +58,46 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans
 .nav-btn.add{background:var(--c-green);color:white;border-color:var(--c-green);font-weight:700;}
 .nav-btn.add:hover{background:#388e3c;}
 
-/* ── 마스코트 ── */
-.mascot-left,.mascot-right{
-  position:absolute;bottom:0;z-index:5;pointer-events:none;
+/* ── 메인 레이아웃 ── */
+.main-container {
+  display: flex;
+  margin-top: 58px;
+  height: calc(100vh - 58px);
+  padding: 20px;
+  gap: 20px;
 }
-.mascot-left{left:250px;}
-.mascot-right{right:230px;}
 
-/* ── 좌측 패널 ── */
-#panel-left{
-  position:absolute;top:68px;left:14px;bottom:10px;
-  width:210px;
-  display:flex;flex-direction:column;gap:10px;
-  z-index:20;overflow-y:auto;
-  scrollbar-width:none;
+/* ── 좌우 패널 ── */
+#panel-left, #panel-right {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
 }
-#panel-left::-webkit-scrollbar{display:none;}
-
-/* ── 우측 패널 ── */
-#panel-right{
-  position:absolute;top:68px;right:14px;bottom:10px;
-  width:205px;
-  display:flex;flex-direction:column;gap:10px;
-  z-index:20;overflow-y:auto;
-  scrollbar-width:none;
-}
-#panel-right::-webkit-scrollbar{display:none;}
-
 .panel-card{
   background:var(--c-card);
   border-radius:var(--r);
-  padding:14px 16px;
+  padding:16px;
   box-shadow:var(--shadow2);
   border:1.5px solid rgba(200,230,200,0.7);
 }
 .panel-title{
-  font-size:13px;font-weight:700;color:var(--c-brown);
+  font-size:14px;font-weight:700;color:var(--c-brown);
   display:flex;align-items:center;gap:5px;
   margin-bottom:10px;padding-bottom:6px;
   border-bottom:2px dashed #e8f5e9;
+}
+
+/* ── 중앙 콘텐츠 (기록 보드) ── */
+#content-center {
+  flex: 1;
+  background: white;
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  overflow-y: auto;
+  border: 2px solid #e8f5e9;
 }
 
 /* ── 통계 카드 ── */
@@ -115,7 +112,161 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans
 .stat-num.blue{color:#1976d2;}
 .stat-num.green{color:var(--c-green);}
 .stat-label{font-size:11px;color:var(--c-muted);margin-top:1px;}
+
 .progress-row{margin-top:4px;}
 .progress-head{display:flex;justify-content:space-between;font-size:11px;color:var(--c-muted);margin-bottom:4px;}
 .progress-bar{height:8px;background:#e8f5e9;border-radius:99px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,#81c784,#4caf50);border-radius:
+.progress-fill{height:100%;background:linear-gradient(90deg,#81c784,#4caf50);border-radius:99px;width:65%;}
+
+/* ── 기록 리스트 스타일 ── */
+.log-item {
+  background: var(--c-cream);
+  padding: 12px;
+  border-radius: var(--r-sm);
+  margin-bottom: 10px;
+  border-left: 5px solid var(--c-green);
+  font-size: 13px;
+}
+.log-header { font-weight: bold; color: var(--c-brown); margin-bottom: 4px; display: flex; justify-content: space-between; }
+.crew-tag { font-size: 11px; background: var(--c-green3); padding: 2px 6px; border-radius: 4px; color: #2e7d32; }
+
+/* ── 새 기록 추가 폼 ── */
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: var(--c-brown); }
+.form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- 상단 헤더 -->
+  <header id="header">
+    <div class="logo">
+      <span>🐱</span> 산타(SANTA) 고양이 등산 기록
+    </div>
+    <nav>
+      <button class="nav-btn active">🏡 홈</button>
+      <button class="nav-btn">📊 통계보기</button>
+    </nav>
+  </header>
+
+  <!-- 메인 본문 구역 -->
+  <div class="main-container">
+    
+    <!-- 좌측 패널 (크루 및 목표) -->
+    <aside id="panel-left">
+      <div class="panel-card">
+        <div class="panel-title">🐾 산타 크루 멤버</div>
+        <p style="font-size: 13px; line-height: 1.6; color: var(--c-brown);">
+          📍 성현지 크루<br>
+          📍 이예빈 크루<br>
+          📍 노현정 크루
+        </p>
+      </div>
+      <div class="panel-card">
+        <div class="panel-title">🎯 올해의 등산 목표</div>
+        <div class="progress-row">
+          <div class="progress-head"><span>목표 달성률 (총 20회)</span><span>65%</span></div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 중앙 패널 (등산 기록 피드) -->
+    <main id="content-center">
+      <h2 style="font-size: 18px; margin-bottom: 15px; color: var(--c-brown); border-bottom: 2px solid var(--c-green3); padding-bottom: 8px;">⛰️ 우리들의 등산 기록 피드</h2>
+      <div id="log-list">
+        <!-- 등산 기록 예시 샘플 -->
+        <div class="log-item">
+          <div class="log-header"><span>북한산 백운대 코스 ⛰️</span><span class="crew-tag">성현지</span></div>
+          <p>날씨가 너무 맑아서 야호 외치기 딱 좋았던 날! 고양이 친구도 만남 🐾</p>
+          <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 2026-05-15 | ⏱️ 3시간 30분</div>
+        </div>
+        <div class="log-item">
+          <div class="log-header"><span>관악산 연주대 코스 🥾</span><span class="crew-tag">이예빈</span></div>
+          <p>깔딱고개 계단 오를 때 다리 터지는 줄 알았지만 정상 뷰는 최고였습니다.</p>
+          <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 2026-05-23 | ⏱️ 4시간</div>
+        </div>
+        <div class="log-item">
+          <div class="log-header"><span>도봉산 신선대 코스 🌤️</span><span class="crew-tag">노현정</span></div>
+          <p>바위 잡고 올라가는 구간 짜릿함 최고! 크루들이랑 다 같이 와서 더 재밌었음.</p>
+          <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 2026-05-31 | ⏱️ 3시간 45분</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 우측 패널 (통계 및 기록 입력) -->
+    <aside id="panel-right">
+      <div class="panel-card">
+        <div class="panel-title">📊 크루 누적 통계</div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-num orange">13</div>
+            <div class="stat-label">총 등산 횟수</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num blue">42.5</div>
+            <div class="stat-label">누적 시간 (h)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">✍️ 등산 기록하기</div>
+        <form id="hiking-form" onsubmit="addLog(event)">
+          <div class="form-group">
+            <label>대원 선택</label>
+            <select id="crew-name">
+              <option>성현지</option>
+              <option>이예빈</option>
+              <option>노현정</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>다녀온 산 / 코스</label>
+            <input type="text" id="mountain-name" placeholder="예: 인왕산 매바위 코스" required>
+          </div>
+          <div class="form-group">
+            <label>간단한 소감</label>
+            <input type="text" id="mountain-review" placeholder="즐거웠던 추억을 남겨보세요!" required>
+          </div>
+          <button class="nav-btn add" type="submit" style="width: 100%; justify-content: center; margin-top: 5px;">📝 기록 등록</button>
+        </form>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+// 간단한 기록 등록 동적 기능 (새로고침 전까지 유지)
+function addLog(event) {
+  event.preventDefault();
+  
+  const crew = document.getElementById('crew-name').value;
+  const mountain = document.getElementById('mountain-name').value;
+  const review = document.getElementById('mountain-review').value;
+  const today = new Date().toISOString().split('T')[0];
+
+  const logList = document.getElementById('log-list');
+  
+  const newItem = document.createElement('div');
+  newItem.className = 'log-item';
+  newItem.style.borderLeft = '5px solid #ff8f00'; // 새 글은 오렌지색 포인트
+  newItem.innerHTML = `
+    <div class="log-header"><span>${mountain} 🐾</span><span class="crew-tag" style="background:#ffe0b2; color:#e65100;">${crew}</span></div>
+    <p>${review}</p>
+    <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 ${today} | ⏱️ 방금 전 등록됨</div>
+  `;
+  
+  logList.insertBefore(newItem, logList.firstChild);
+  
+  // 폼 초기화
+  document.getElementById('mountain-name').value = '';
+  document.getElementById('mountain-review').value = '';
+  
+  alert('✨ 새로운 등산 기록이 피드에 추가되었습니다!');
+}
+</script>
+</body>
+</html>
