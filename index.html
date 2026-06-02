@@ -1,32 +1,25 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="notranslate">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>산타 🐱 대한민국 100대 명산 지도 & 필터</title>
+<title>산타 🐱 대한민국 100대 명산 지도</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { display: flex; justify-content: center; align-items: center; background: #f0f2f5; font-family: sans-serif; min-height: 100vh; }
   
-  /* 디자인 원본 이미지를 외부 링크로 안전하게 바인딩 */
+  /* 디자인 원본 이미지를 브라우저가 차단하지 못하도록 깃허브 Pages 실제 절대 경로로 바인딩 */
   #santa-container {
     position: relative;
     width: 1000px;
     height: 1000px;
-    background: url('https://raw.githubusercontent.com/shthdusdla-hue/SANTA/main/image_9c597c.jpg') no-repeat center center;
-    background-size: contain;
+    background-image: url('./image_9c597c.jpg') !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     overflow: hidden;
-  }
-
-  /* 만약 대문자 .JPG로 올라가 있을 경우를 대비한 백업 처리 */
-  #santa-container::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: url('https://raw.githubusercontent.com/shthdusdla-hue/SANTA/main/image_9c597c.JPG') no-repeat center center;
-    background-size: contain;
-    z-index: -1;
   }
 
   /* ── 상단 원본 검색창 위치에 실제 투명 검색창 얹기 ── */
@@ -36,9 +29,10 @@
     left: 683px;
     width: 120px;
     height: 28px;
-    border: none;
-    background: transparent;
-    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #ffffff;
+    font-size: 11px;
     padding: 0 5px;
     outline: none;
     z-index: 30;
@@ -80,11 +74,11 @@
   .mountain-spot:hover { transform: scale(1.15); }
   .mountain-spot.hidden { opacity: 0.1; pointer-events: none; }
 
-  /* 주요 명산 좌표 설정 */
-  #spot-seoul { top: 305px; left: 345px; }   
-  #spot-seorak { top: 220px; left: 455px; }  
-  #spot-jiri { top: 550px; left: 450px; }    
-  #spot-taebaek { top: 315px; left: 435px; } 
+  /* 원본 지도 안의 각 산의 실제 위치 좌표 매핑 */
+  #spot-seoul { top: 310px; left: 395px; }   
+  #spot-seorak { top: 215px; left: 545px; }  
+  #spot-jiri { top: 560px; left: 470px; }    
+  #spot-taebaek { top: 350px; left: 535px; } 
   #spot-hallasan { top: 790px; left: 350px; }
 
   /* 등산 상태 아이콘 (고양이 발바닥 / 고양이 얼굴 / 깃발) */
@@ -96,7 +90,7 @@
     justify-content: center;
     align-items: center;
     animation: popIn 0.3s ease-out;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border: 2px solid #4caf50;
     border-radius: 50%;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
@@ -105,7 +99,7 @@
   .spot-label {
     position: absolute;
     bottom: -18px;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.75);
     color: white;
     font-size: 10px;
     padding: 2px 6px;
@@ -122,7 +116,7 @@
   /* ── 우측 하단 진짜 작동하는 댓글창 영역 ── */
   #real-comment-box {
     position: absolute;
-    top: 575px; 
+    top: 615px; 
     left: 645px;
     width: 295px;
     height: 250px;
@@ -159,11 +153,11 @@
     
     <input type="text" id="real-search-input" placeholder="산 이름 검색..." oninput="searchMountain()">
 
-    <div class="filter-btn-mask" id="btn-spring" onclick="filterTheme('spring')" title="봄 추천 산 보기"></div>
-    <div class="filter-btn-mask" id="btn-autumn" onclick="filterTheme('autumn')" title="가을 추천 산 보기"></div>
-    <div class="filter-btn-mask" id="btn-beginner" onclick="filterTheme('beginner')" title="등산 초보(등린이) 추천 코스"></div>
-    <div class="filter-btn-mask" id="btn-summer" onclick="filterTheme('summer')" title="여름 추천 산 보기"></div>
-    <div class="filter-btn-mask" id="btn-foodie" onclick="filterTheme('foodie')" title="주변 맛집 많은 산 코스"></div>
+    <div class="filter-btn-mask" id="btn-spring" onclick="filterTheme('spring')" title="봄 추천 산"></div>
+    <div class="filter-btn-mask" id="btn-autumn" onclick="filterTheme('autumn')" title="가을 추천 산"></div>
+    <div class="filter-btn-mask" id="btn-beginner" onclick="filterTheme('beginner')" title="등산 초보 코스"></div>
+    <div class="filter-btn-mask" id="btn-summer" onclick="filterTheme('summer')" title="여름 추천 산"></div>
+    <div class="filter-btn-mask" id="btn-foodie" onclick="filterTheme('foodie')" title="맛집 많은 코스"></div>
 
     <div class="mountain-spot" id="spot-seoul" onclick="toggleMountain('seoul')"><span class="spot-label">서울산</span></div>
     <div class="mountain-spot" id="spot-seorak" onclick="toggleMountain('seorak')"><span class="spot-label">설악산</span></div>
@@ -173,8 +167,8 @@
 
     <div id="real-comment-box">
       <div id="comment-list">
-        <div class="comment-item"><span class="comment-author">산타매니아</span>가끔 가는데 등산 맛집이네요 👍</div>
-        <div class="comment-item"><span class="comment-author">냥이조아</span>정상 뷰 최고! 고양이 발자국 남기고 갑니다🐾</div>
+        <div class="comment-item"><span class="comment-author">노지언679</span>가금 가는데 묵올안하다 👍</div>
+        <div class="comment-item"><span class="comment-author">부지인579</span>정상 뷰 최고! 김치찌개 시켜서 나눠먹어도 좋네요🐾</div>
       </div>
       <form class="comment-form" onsubmit="submitComment(event)">
         <input type="text" class="comment-input" id="c-text" placeholder="댓글을 입력해 주세요." required>
@@ -226,7 +220,6 @@
 
   function searchMountain() {
     const keyword = document.getElementById('real-search-input').value.trim();
-    
     if (!keyword) {
       if (currentActiveFilter) filterTheme(currentActiveFilter);
       else resetFilters();
@@ -273,7 +266,7 @@
     
     if (!input.value.trim()) return;
 
-    const anonymousUser = '산타크로버' + Math.floor(Math.random() * 900 + 100);
+    const anonymousUser = '산타크루' + Math.floor(Math.random() * 900 + 100);
     const newItem = document.createElement('div');
     newItem.className = 'comment-item';
     newItem.innerHTML = `<span class="comment-author">${anonymousUser}</span>${input.value}`;
