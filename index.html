@@ -3,270 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>산타 🐱 고양이 등산 기록</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<title>산타 🐱 대한민국 100대 명산 지도</title>
 <style>
-:root {
-  --c-bg: #f0f6e8;
-  --c-card: rgba(255,255,255,0.92);
-  --c-green: #4caf50;
-  --c-green2: #81c784;
-  --c-green3: #c8e6c9;
-  --c-orange: #ff8f00;
-  --c-peach: #ffab76;
-  --c-sky: #b3e5fc;
-  --c-pink: #f8bbd0;
-  --c-lavender: #e1bee7;
-  --c-cream: #fff9f0;
-  --c-brown: #6d4c41;
-  --c-text: #2e2e2e;
-  --c-muted: #8d8d8d;
-  --shadow: 0 4px 20px rgba(0,0,0,0.12);
-  --shadow2: 0 2px 10px rgba(0,0,0,0.09);
-  --r: 18px;
-  --r-sm: 12px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;color:var(--c-text);background:var(--c-bg);}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { display: flex; justify-content: center; align-items: center; background: #f0f2f5; font-family: sans-serif; min-height: 100vh; }
+  
+  /* 디자인 원본 이미지를 배경으로 깔아주는 컨테이너 */
+  #santa-container {
+    position: relative;
+    width: 1000px; /* 원본 디자인 비율에 맞춤 */
+    height: 1000px;
+    background: url('image_9c597c.jpg') no-repeat center center;
+    background-size: contain;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
 
-/* ── 지도 배경 전체 ── */
-#app{width:100vw;height:100vh;position:relative;overflow:hidden;}
+  /* ── 1. 지도 위 클릭 가능한 산 인터랙티브 영역 ── */
+  .mountain-spot {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    z-index: 10;
+  }
+  .mountain-spot:hover { transform: scale(1.15); }
 
-/* ── 헤더 ── */
-#header{
-  position:absolute;top:0;left:0;right:0;
-  height:58px;
-  background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(10px);
-  border-bottom:2px solid #e8f5e9;
-  display:flex;align-items:center;gap:12px;padding:0 20px;
-  z-index:100;
-  box-shadow:0 2px 12px rgba(80,120,60,0.1);
-}
-.logo{
-  font-family:'Gaegu',cursive;font-size:26px;font-weight:700;
-  color:var(--c-green);display:flex;align-items:center;gap:6px;
-}
-#header nav{margin-left:auto;display:flex;gap:8px;}
-.nav-btn{
-  padding:7px 16px;border-radius:99px;border:2px solid #c8e6c9;
-  background:white;font-size:13px;font-family:'Noto Sans KR',sans-serif;
-  font-weight:500;color:var(--c-brown);cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;gap:5px;
-}
-.nav-btn:hover,.nav-btn.active{background:var(--c-green);color:white;border-color:var(--c-green);}
-.nav-btn.add{background:var(--c-green);color:white;border-color:var(--c-green);font-weight:700;}
-.nav-btn.add:hover{background:#388e3c;}
+  /* 주요 명산 좌표 설정 (이미지 비율에 맞춰 투명하게 배치) */
+  #spot-seoul { top: 305px; left: 345px; } /* 서울산 위치 */
+  #spot-seorak { top: 220px; left: 455px; } /* 설악산 위치 */
+  #spot-jiri { top: 550px; left: 450px; } /* 지리산 위치 */
 
-/* ── 메인 레이아웃 ── */
-.main-container {
-  display: flex;
-  margin-top: 58px;
-  height: calc(100vh - 58px);
-  padding: 20px;
-  gap: 20px;
-}
+  /* 등산 상태 아이콘 (고양이 발바닥 / 고양이 얼굴 / 깃발) */
+  .status-icon {
+    font-size: 24px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: popIn 0.3s ease-out;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid #4caf50;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
 
-/* ── 좌우 패널 ── */
-#panel-left, #panel-right {
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  overflow-y: auto;
-}
-.panel-card{
-  background:var(--c-card);
-  border-radius:var(--r);
-  padding:16px;
-  box-shadow:var(--shadow2);
-  border:1.5px solid rgba(200,230,200,0.7);
-}
-.panel-title{
-  font-size:14px;font-weight:700;color:var(--c-brown);
-  display:flex;align-items:center;gap:5px;
-  margin-bottom:10px;padding-bottom:6px;
-  border-bottom:2px dashed #e8f5e9;
-}
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
 
-/* ── 중앙 콘텐츠 (기록 보드) ── */
-#content-center {
-  flex: 1;
-  background: white;
-  border-radius: var(--r);
-  box-shadow: var(--shadow);
-  padding: 20px;
-  overflow-y: auto;
-  border: 2px solid #e8f5e9;
-}
-
-/* ── 통계 카드 ── */
-.stat-row{display:flex;gap:8px;margin-bottom:8px;}
-.stat-box{
-  flex:1;background:var(--c-cream);border-radius:var(--r-sm);
-  padding:10px 8px;text-align:center;
-  border:1.5px solid #ffe0b2;
-}
-.stat-num{font-family:'Gaegu',cursive;font-size:32px;font-weight:700;line-height:1;}
-.stat-num.orange{color:var(--c-orange);}
-.stat-num.blue{color:#1976d2;}
-.stat-num.green{color:var(--c-green);}
-.stat-label{font-size:11px;color:var(--c-muted);margin-top:1px;}
-
-.progress-row{margin-top:4px;}
-.progress-head{display:flex;justify-content:space-between;font-size:11px;color:var(--c-muted);margin-bottom:4px;}
-.progress-bar{height:8px;background:#e8f5e9;border-radius:99px;overflow:hidden;}
-.progress-fill{height:100%;background:linear-gradient(90deg,#81c784,#4caf50);border-radius:99px;width:65%;}
-
-/* ── 기록 리스트 스타일 ── */
-.log-item {
-  background: var(--c-cream);
-  padding: 12px;
-  border-radius: var(--r-sm);
-  margin-bottom: 10px;
-  border-left: 5px solid var(--c-green);
-  font-size: 13px;
-}
-.log-header { font-weight: bold; color: var(--c-brown); margin-bottom: 4px; display: flex; justify-content: space-between; }
-.crew-tag { font-size: 11px; background: var(--c-green3); padding: 2px 6px; border-radius: 4px; color: #2e7d32; }
-
-/* ── 새 기록 추가 폼 ── */
-.form-group { margin-bottom: 12px; }
-.form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: var(--c-brown); }
-.form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+  /* ── 2. 우측 하단 진짜 작동하는 댓글창 영역 ── */
+  #real-comment-box {
+    position: absolute;
+    top: 575px; /* 원본 디자인 댓글 입력창 위치 크기 커스텀 마스킹 */
+    left: 645px;
+    width: 295px;
+    height: 250px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    border: 1px solid #e0e0e0;
+    z-index: 20;
+  }
+  #comment-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 8px;
+    padding-right: 5px;
+  }
+  .comment-item {
+    padding: 6px 4px;
+    border-bottom: 1px dashed #eee;
+    line-height: 1.4;
+  }
+  .comment-author { font-weight: bold; color: #4caf50; margin-right: 5px; }
+  .comment-form { display: flex; gap: 4px; }
+  .comment-input { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 11px; }
+  .comment-submit { background: #2e2e2e; color: white; border: none; padding: 0 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+  .comment-submit:hover { background: #000; }
 </style>
 </head>
 <body>
 
 <div id="app">
-  <!-- 상단 헤더 -->
-  <header id="header">
-    <div class="logo">
-      <span>🐱</span> 산타(SANTA) 고양이 등산 기록
-    </div>
-    <nav>
-      <button class="nav-btn active">🏡 홈</button>
-      <button class="nav-btn">📊 통계보기</button>
-    </nav>
-  </header>
-
-  <!-- 메인 본문 구역 -->
-  <div class="main-container">
+  <div id="santa-container">
     
-    <!-- 좌측 패널 (크루 및 목표) -->
-    <aside id="panel-left">
-      <div class="panel-card">
-        <div class="panel-title">🐾 산타 크루 멤버</div>
-        <p style="font-size: 13px; line-height: 1.6; color: var(--c-brown);">
-          📍 성현지 크루<br>
-          📍 이예빈 크루<br>
-          📍 노현정 크루
-        </p>
-      </div>
-      <div class="panel-card">
-        <div class="panel-title">🎯 올해의 등산 목표</div>
-        <div class="progress-row">
-          <div class="progress-head"><span>목표 달성률 (총 20회)</span><span>65%</span></div>
-          <div class="progress-bar"><div class="progress-fill"></div></div>
-        </div>
-      </div>
-    </aside>
+    <!-- 지도 위 인터랙티브 산 스팟들 (클릭하면 상태 변경) -->
+    <div class="mountain-spot" id="spot-seoul" onclick="toggleMountain('seoul')" title="서울산 등산 인증"></div>
+    <div class="mountain-spot" id="spot-seorak" onclick="toggleMountain('seorak')" title="설악산 등산 인증"></div>
+    <div class="mountain-spot" id="spot-jiri" onclick="toggleMountain('jiri')" title="지리산 등산 인증"></div>
 
-    <!-- 중앙 패널 (등산 기록 피드) -->
-    <main id="content-center">
-      <h2 style="font-size: 18px; margin-bottom: 15px; color: var(--c-brown); border-bottom: 2px solid var(--c-green3); padding-bottom: 8px;">⛰️ 우리들의 등산 기록 피드</h2>
-      <div id="log-list">
-        <!-- 등산 기록 예시 샘플 -->
-        <div class="log-item">
-          <div class="log-header"><span>북한산 백운대 코스 ⛰️</span><span class="crew-tag">성현지</span></div>
-          <p>날씨가 너무 맑아서 야호 외치기 딱 좋았던 날! 고양이 친구도 만남 🐾</p>
-          <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 2026-05-15 | ⏱️ 3시간 30분</div>
-        </div>
-        <div class="log-item">
-          <div class="log-header"><span>관악산 연주대 코스 🥾</span><span class="crew-tag">이예빈</span></div>
-          <p>깔딱고개 계단 오를 때 다리 터지는 줄 알았지만 정상 뷰는 최고였습니다.</p>
-          <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 2026-05-23 | ⏱️ 4시간</div>
-        </div>
-        <div class="log-item">
-          <div class="log-header"><span>도봉산 신선대 코스 🌤️</span><span class="crew-tag">노현정</span></div>
-          <p>바위 잡고 올라가는 구간 짜릿함 최고! 크루들이랑 다 같이 와서 더 재밌었음.</p>
-          <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 2026-05-31 | ⏱️ 3시간 45분</div>
-        </div>
+    <!-- 작동하는 댓글창 마스킹 영역 -->
+    <div id="real-comment-box">
+      <div id="comment-list">
+        <div class="comment-item"><span class="comment-author">산타매니아</span>가끔 가는데 등산 맛집이네요 👍</div>
+        <div class="comment-item"><span class="comment-author">냥이조아</span>정상 뷰 최고! 고양이 발자국 남기고 갑니다🐾</div>
       </div>
-    </main>
-
-    <!-- 우측 패널 (통계 및 기록 입력) -->
-    <aside id="panel-right">
-      <div class="panel-card">
-        <div class="panel-title">📊 크루 누적 통계</div>
-        <div class="stat-row">
-          <div class="stat-box">
-            <div class="stat-num orange">13</div>
-            <div class="stat-label">총 등산 횟수</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-num blue">42.5</div>
-            <div class="stat-label">누적 시간 (h)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel-card">
-        <div class="panel-title">✍️ 등산 기록하기</div>
-        <form id="hiking-form" onsubmit="addLog(event)">
-          <div class="form-group">
-            <label>대원 선택</label>
-            <select id="crew-name">
-              <option>성현지</option>
-              <option>이예빈</option>
-              <option>노현정</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>다녀온 산 / 코스</label>
-            <input type="text" id="mountain-name" placeholder="예: 인왕산 매바위 코스" required>
-          </div>
-          <div class="form-group">
-            <label>간단한 소감</label>
-            <input type="text" id="mountain-review" placeholder="즐거웠던 추억을 남겨보세요!" required>
-          </div>
-          <button class="nav-btn add" type="submit" style="width: 100%; justify-content: center; margin-top: 5px;">📝 기록 등록</button>
-        </form>
-      </div>
-    </aside>
+      <form class="comment-form" onsubmit="submitComment(event)">
+        <input type="text" class="comment-input" id="c-text" placeholder="댓글을 입력해 주세요." required>
+        <button type="submit" class="comment-submit">등록</button>
+      </form>
+    </div>
 
   </div>
 </div>
 
 <script>
-// 간단한 기록 등록 동적 기능 (새로고침 전까지 유지)
-function addLog(event) {
-  event.preventDefault();
-  
-  const crew = document.getElementById('crew-name').value;
-  const mountain = document.getElementById('mountain-name').value;
-  const review = document.getElementById('mountain-review').value;
-  const today = new Date().toISOString().split('T')[0];
+  // 산별 등산 상태 관리 (0: 미완료, 1: 발바닥, 2: 고양이 얼굴, 3: 깃발)
+  const mountainStates = {
+    seoul: 0,
+    seorak: 0,
+    jiri: 0
+  };
 
-  const logList = document.getElementById('log-list');
-  
-  const newItem = document.createElement('div');
-  newItem.className = 'log-item';
-  newItem.style.borderLeft = '5px solid #ff8f00'; // 새 글은 오렌지색 포인트
-  newItem.innerHTML = `
-    <div class="log-header"><span>${mountain} 🐾</span><span class="crew-tag" style="background:#ffe0b2; color:#e65100;">${crew}</span></div>
-    <p>${review}</p>
-    <div style="font-size: 11px; color: var(--c-muted); margin-top: 5px;">📅 ${today} | ⏱️ 방금 전 등록됨</div>
-  `;
-  
-  logList.insertBefore(newItem, logList.firstChild);
-  
-  // 폼 초기화
-  document.getElementById('mountain-name').value = '';
-  document.getElementById('mountain-review').value = '';
-  
-  alert('✨ 새로운 등산 기록이 피드에 추가되었습니다!');
-}
+  const icons = {
+    1: '🐾', // 1단계: 고양이 발바닥
+    2: '🐱', // 2단계: 고양이 얼굴
+    3: '🚩'  // 3단계: 등산 완료 깃발
+  };
+
+  // 산 클릭 시 아이콘 순환 변경 기능
+  function toggleMountain(mountainId) {
+    // 상태 변경 (0 -> 1 -> 2 -> 3 -> 다시 0)
+    mountainStates[mountainId] = (mountainStates[mountainId] + 1) % 4;
+    
+    const spot = document.getElementById(`spot-${mountainId}`);
+    const currentState = mountainStates[mountainId];
+
+    // 기존 아이콘 삭제
+    spot.innerHTML = '';
+
+    // 상태가 0이 아니면 새로운 아이콘 추가
+    if (currentState > 0) {
+      const iconEl = document.createElement('div');
+      iconEl.className = 'status-icon';
+      iconEl.innerText = icons[currentState];
+      spot.appendChild(iconEl);
+    }
+  }
+
+  // 실시간 댓글 등록 기능
+  function submitComment(event) {
+    event.preventDefault();
+    const input = document.getElementById('c-text');
+    const list = document.getElementById('comment-list');
+    
+    if (!input.value.trim()) return;
+
+    // 익명 유저 네임 생성
+    const anonymousUser = '산타크루' + Math.floor(Math.random() * 900 + 100);
+
+    const newItem = document.createElement('div');
+    newItem.className = 'comment-item';
+    newItem.innerHTML = `<span class="comment-author">${anonymousUser}</span>${input.value}`;
+    
+    list.appendChild(newItem);
+    list.scrollTop = list.scrollHeight; // 스크롤을 맨 아래로 이동
+    
+    input.value = ''; // 입력창 초기화
+  }
 </script>
 </body>
 </html>
